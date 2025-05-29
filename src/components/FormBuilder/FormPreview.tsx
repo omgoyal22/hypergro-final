@@ -88,26 +88,50 @@ export const FormPreview = ({ formId, onSubmit, isPublic = false }: FormPreviewP
     }
   };
 
-  const getPreviewWidth = () => {
+  const getPreviewStyles = () => {
     switch (previewMode) {
-      case 'mobile': return 'max-w-sm';
-      case 'tablet': return 'max-w-md';
-      default: return 'max-w-2xl';
+      case 'mobile':
+        return {
+          container: 'w-full max-w-sm mx-auto px-2',
+          card: 'mx-2',
+          spacing: 'space-y-4',
+          button: 'w-full text-sm py-2'
+        };
+      case 'tablet':
+        return {
+          container: 'w-full max-w-md mx-auto px-4',
+          card: 'mx-4',
+          spacing: 'space-y-5',
+          button: 'w-full'
+        };
+      default: // desktop
+        return {
+          container: 'w-full max-w-2xl mx-auto px-6',
+          card: 'mx-6',
+          spacing: 'space-y-6',
+          button: 'w-full'
+        };
     }
   };
 
+  const styles = getPreviewStyles();
+
   return (
     <div className="w-full h-full overflow-auto bg-gray-50 dark:bg-gray-900 p-4">
-      <div className={`mx-auto transition-all duration-300 ${getPreviewWidth()}`}>
-        <Card className="shadow-lg">
-          <CardHeader>
-            <CardTitle className="text-2xl">{form.title}</CardTitle>
+      <div className={`transition-all duration-300 ${styles.container}`}>
+        <Card className={`shadow-lg ${styles.card}`}>
+          <CardHeader className={previewMode === 'mobile' ? 'pb-4' : 'pb-6'}>
+            <CardTitle className={`${previewMode === 'mobile' ? 'text-xl' : 'text-2xl'}`}>
+              {form.title}
+            </CardTitle>
             {form.description && (
-              <p className="text-gray-600 dark:text-gray-300">{form.description}</p>
+              <p className={`text-gray-600 dark:text-gray-300 ${previewMode === 'mobile' ? 'text-sm' : ''}`}>
+                {form.description}
+              </p>
             )}
           </CardHeader>
-          <CardContent>
-            <form onSubmit={handleSubmit} className="space-y-6">
+          <CardContent className={previewMode === 'mobile' ? 'px-4' : 'px-6'}>
+            <form onSubmit={handleSubmit} className={styles.spacing}>
               {form.fields.map((field) => (
                 <div key={field.id}>
                   <FieldRenderer
@@ -121,7 +145,7 @@ export const FormPreview = ({ formId, onSubmit, isPublic = false }: FormPreviewP
               ))}
               
               {form.fields.length > 0 && (
-                <Button type="submit" className="w-full">
+                <Button type="submit" className={styles.button}>
                   Submit Form
                 </Button>
               )}
